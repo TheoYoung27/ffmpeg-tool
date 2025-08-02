@@ -12,7 +12,6 @@ Param(
     #Retain original files
     [boolean]$RetainFiles = $false
 )
-$Verbose = Get-Verbose
 Function GetFile {
     Param($Path = '.\')
     Read-Host
