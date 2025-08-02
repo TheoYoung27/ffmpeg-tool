@@ -1,13 +1,18 @@
+<#
+.SYNOPSIS
+Convert various files to mp3 using ffmpeg
+#>
+
+[Cmdletbinding()]
 Param(
-    [Parameter(HelpMessage="Path to directory containing audio files")]
-    [String]$Path = 'C:\Users\Theo\Music\SoulSeekDownloads\complete',
-    [Parameter(HelpMessage="List of file types to convert to mp3")]
-    [String[]]$Extensions = (".flac", ".webm"),
-    [Parameter(HelpMessage="display more information during execution")]
-    [boolean]$v = $false,
-    [Parameter(HelpMessage="retain original files")]
+    #Path to directory containing audio files
+    [String]$Path = 'C:\Users\Theo\Music\SoulSeekDownloads\complete', 
+    #List of file types to convert to mp3
+    [String[]]$Extensions = (".flac", ".webm"), 
+    #Retain original files
     [boolean]$RetainFiles = $false
 )
+$Verbose = Get-Verbose
 Function GetFile {
     Param($Path = '.\')
     Read-Host
@@ -19,7 +24,7 @@ Function GetFile {
         if ($Extensions -contains $_.Extension) {
             $formattedFullName = $_.FullName.Substring(0, $_.FullName.Length - $_.Extension.Length) + ".mp3"
             $ffmpegArgs ="`"" + $_.FullName + "`" `"" + $formattedFullName+  "`""
-            if($v) {
+            if($Verbose) {
             Write-Host $formattedFullName
             $ffmpegArgs = $ffmpegArgs.StartsWith("loglevel verbose -i ")
             Write-Host $ffmpegArgs
