@@ -8,32 +8,28 @@ Param(
     #Path to directory containing audio files
     [String]$Path = 'C:\Users\Theo\Music\SoulSeekDownloads\complete', 
     #List of file types to convert to mp3
-    [String[]]$Extensions = (".flac", ".webm"), 
+    [String[]]$Extensions = (".flac", ".webm", ".m4a"), 
     #Retain original files
-    [boolean]$RetainFiles = $false
+    [switch]$RetainFiles = $false
 )
 Function GetFile {
     Param($Path = '.\')
-    Read-Host
-    Get-ChildItem -Path $Path | ForEach-Object {
-        Write-Host "$_"
-        if ($_.PSIsContainer) {
-            GetFile -Path $_.FullName
-        }
-        if ($Extensions -contains $_.Extension) {
+    Get-ChildItem  $Path -recurse | ForEach-Object {
+        Write-Host "$_ "
+        if (($Extensions -contains $_.Extension) -and !$_.PSIsContainer) {
             $formattedFullName = $_.FullName.Substring(0, $_.FullName.Length - $_.Extension.Length) + ".mp3"
             $ffmpegArgs ="`"" + $_.FullName + "`" `"" + $formattedFullName+  "`""
-            if($Verbose) {
-            Write-Host $formattedFullName
-            $ffmpegArgs = $ffmpegArgs.StartsWith("loglevel verbose -i ")
-            Write-Host $ffmpegArgs
+            if($VerbosePreference) {
+                Write-Host $formattedFullName
+                $ffmpegArgs ="-loglevel verbose -i " + $ffmpegArgs
+                Write-Host $ffmpegArgs
             }
             else {
-                $ffmpegArgs = $ffmpegArgs.StartsWith("loglevel error -i ")
+                $ffmpegArgs ="-loglevel error -i " + $ffmpegArgs
             }
             Start-Process -FilePath ffmpeg.exe -ArgumentList $ffmpegArgs -Wait -NoNewWindow
-            if(!$RetainFiles) {
-                Remove-Item -Path $_.FullName
+            if(-not $RetainFiles) {
+                Remove-Item -LiteralPath $_.FullName
             }
         }
     }
