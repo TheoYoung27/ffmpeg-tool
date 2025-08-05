@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-Convert various files to mp3 using ffmpeg
+Convert files using ffmpeg
 #>
 
 [Cmdletbinding()]
@@ -9,6 +9,8 @@ Param(
     [String]$Path = 'C:\Users\Theo\Music\SoulSeekDownloads\complete', 
     #List of file types to convert to mp3
     [String[]]$Extensions = (".flac", ".webm", ".m4a"), 
+    #Output file type
+    [String]$Output = ".mp3",
     #Retain original files
     [switch]$RetainFiles = $false
 )
@@ -17,7 +19,7 @@ Function GetFile {
     Get-ChildItem  $Path -recurse | ForEach-Object {
         Write-Host "$_ "
         if (($Extensions -contains $_.Extension) -and !$_.PSIsContainer) {
-            $formattedFullName = $_.FullName.Substring(0, $_.FullName.Length - $_.Extension.Length) + ".mp3"
+            $formattedFullName = $_.FullName.Substring(0, $_.FullName.Length - $_.Extension.Length) + "$Output"
             $ffmpegArgs ="`"" + $_.FullName + "`" `"" + $formattedFullName+  "`""
             if($VerbosePreference) {
                 Write-Host $formattedFullName
